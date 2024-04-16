@@ -1,21 +1,3 @@
----
-apiVersion: backstage.io/v1beta3
-kind: Group
-metadata:
-  name: backend-team
-  title: Backend Developers
-spec:
-  type: team
-  children: []
----
-apiVersion: backstage.io/v1alpha1
-kind: System
-metadata:
-  name: Backends
-  title: Backends
-spec:
-  owner: backend-team
----
 # Notice the v1beta3 version
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
