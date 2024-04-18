@@ -81,13 +81,15 @@ spec:
       name: backstage request
       action: http:backstage:request
       input:
-        method: 'GET'
+        method: 'POST'
         path: '/proxy/echo-server/sample-request'
+        headers:
+          content-type: 'application/json'
+        body:
+          component_id: '${{ parameters.component_id }}'
+          description: '${{ parameters.description }}'
         params:
           foo: 'bar'
-        body:
-          pippo: ${{ parameters.java_package_name }}
-
     # - id: publish
     #   name: Publish
     #   action: publish:github
@@ -105,9 +107,13 @@ spec:
     #     catalogInfoPath: "/catalog-info.yaml"
 
   output:
-    getResponse: '{{ steps.backstage_request.output.body }}'
-    getCode: '{{ steps.backstage_request.output.code }}'
-    getHeaders: '{{ steps.backstage_request.output.headers }}'
+    text:
+      - title: Http Code
+        content: Response code is `${{ steps['backstage_request'].output.code }}`
+      - title: Http Headers
+        content: Headers are `${{ steps['backstage_request'].output.headers | dump }}`
+      - title: Http Response
+        content: Response body is `${{ steps['backstage_request'].output.body | dump }}`
 
   # output:
   #   links:
