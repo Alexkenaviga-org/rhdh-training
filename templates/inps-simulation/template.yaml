@@ -1,0 +1,102 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: an-http-template
+  title: an-http-template
+  description: an-http-template
+  tags:
+    - recommended
+spec:
+  owner: team-1
+  type: service
+
+  # {
+  #   "code": "MS00002",
+  #   "mnemonicName": "devhub-test-repo",
+  #   "macroAreaAbbreviation": "DAAT",
+  #   "teamId": "9883de71-03ae-4e12-9c86-cd3ad072e174",
+  #   "teamProjectId": "0b882d41-cc63-4668-9bb1-5730b7d35009"
+  # }
+
+  parameters:
+    - title: Project Details
+      required:
+        - code
+        - mnemonicName
+        - macroAreaAbbreviation
+        - teamId
+        - teamProjectId
+
+      properties:
+        code:
+          title: Code
+          type: string
+          description: Project's code
+          #pattern: '[A-Z]{2}+[0-9]{5}+'
+
+        mnemonicName:
+          title: Mnemonic Name
+          type: string
+          description: Project's mnemonic name
+
+        macroAreaAbbreviation:
+          title: Macro-area Abbreviation
+          type: string
+          description: The abbreviation code of projecr's macro-area
+
+        teamId:
+          title: Team ID
+          type: string
+          description: The owning team ID
+
+        teamProjectId:
+          title: Team Project ID
+          type: string
+          description: The owning team's Project ID
+
+    - title: For test purpose
+      required:
+        - repoUri
+      properties:
+        repoUri:
+          title: Repo-URI
+          type: string
+          description: uri to be returned by echo server
+
+  
+  steps:
+    - id: backstage_request
+      name: backstage request
+      action: http:backstage:request
+      input:
+        method: 'POST'
+        path: '/proxy/echo-server/sample-request'
+        headers:
+          content-type: 'application/json'
+        body:
+          name: '${{ parameters.teamId }}_${{ parameters.code }}_${{ parameters.mnemonicName }}'
+          id: 'a-random-id'
+          code: '${{ parameters.mnemonicName }}'
+          mnemonicName: '${{ parameters.code }}'
+          isFork: false
+          devOpsUrl: '${{ parameters.repoUri }}'
+
+
+  output:
+    text:
+      - title: DAAT Response
+        content: |
+          - **name**: ${{ steps['backstage_request'].output.body.parsedBody.name }}
+          - **id**: ${{ steps['backstage_request'].output.body.parsedBody.id }}
+          - **code**: ${{ steps['backstage_request'].output.body.parsedBody.code }}
+          - **mnemonicName**: ${{ steps['backstage_request'].output.body.parsedBody.mnemonicName }}
+          - **isFork**: ${{ steps['backstage_request'].output.body.parsedBody.isFork }}
+          - **devOpsUrl**: ${{ steps['backstage_request'].output.body.parsedBody.devOpsUrl }}
+
+  # output:
+  #   links:
+  #     - title: Repository
+  #       url: ${{ steps.publish.output.remoteUrl }}
+  #     - title: Open in catalog
+  #       icon: catalog
+  #       entityRef: ${{ steps.register.output.entityRef }}
