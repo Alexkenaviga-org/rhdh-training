@@ -1,8 +1,0 @@
-apiVersion: backstage.io/v1beta3
-kind: Component
-metadata:
-  name: ${{values.name | dump}}
-spec:
-  type: backend
-  lifecycle: development
-  owner: ${{values.owner | dump}}
